@@ -1,11 +1,13 @@
-import { getAllSubdomains } from '@/lib/subdomains';
-import type { Metadata } from 'next';
-import { AdminDashboard } from './dashboard';
-import { rootDomain } from '@/lib/utils';
+import React from "react";
+
+import { getAllSubdomains } from "@/lib/subdomains";
+import type { Metadata } from "next";
+import { AdminDashboard } from "./dashboard";
+import { rootDomain } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: `Admin Dashboard | ${rootDomain}`,
-  description: `Manage subdomains for ${rootDomain}`
+  description: `Manage subdomains for ${rootDomain}`,
 };
 
 export default async function AdminPage() {
