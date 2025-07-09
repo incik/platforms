@@ -11,7 +11,7 @@ export const User = ({ name, username, email, address }) => {
   );
 };
 
-export async function Greeter() {
+export default async function Greeter() {
   const product = {
     name: "Picoloddddddd",
     price: 19.99,

@@ -23,7 +23,7 @@ await esbuild.build({
   },
   footer: {
     js: `
-      globalThis.render = Plugin.Greeter;
+      globalThis.render = Plugin.default;
     })();`,
   },
 });

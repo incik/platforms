@@ -22,8 +22,8 @@ var Plugin = (() => {
   // addons/picolo/greeter.server.jsx
   var greeter_server_exports = {};
   __export(greeter_server_exports, {
-    Greeter: () => Greeter,
-    User: () => User
+    User: () => User,
+    default: () => Greeter
   });
 
   // scripts/fetch.js
@@ -91,5 +91,5 @@ var Plugin = (() => {
   return __toCommonJS(greeter_server_exports);
 })();
 
-      globalThis.render = Plugin.Greeter;
+      globalThis.render = Plugin.default;
     })();
