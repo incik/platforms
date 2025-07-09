@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSubdomainData } from "@/lib/subdomains";
 import { protocol, rootDomain } from "@/lib/utils";
+import { HydratedAddon } from "@/app/HydratedAddon";
 
 export async function generateMetadata({
   params,
@@ -39,6 +40,22 @@ export default async function SubdomainPage({
 
   const emoji = JSON.parse(subdomainData).emoji;
 
+  const { getOrCreateIsolate } = require("../../../lib/isolated-vm-runner");
+  const { render } = await getOrCreateIsolate(subdomain);
+  const code = await render();
+
+  // console.log("Addon code:", code);
+  //const curried = eval(code);
+  // if (typeof curried !== "function") {
+  //   throw new Error("Addon did not return a valid function");
+  // }
+  // console.log("Curried code:", curried);
+  // const html = await curried(React, fetch);
+  // console.log("HTML output:", html);
+  // const html = React.createElement("div", {
+  //   dangerouslySetInnerHTML: { __html: code },
+  // });
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="absolute top-4 right-4">
@@ -59,6 +76,8 @@ export default async function SubdomainPage({
           <p className="mt-3 text-lg text-gray-600">
             This is your custom subdomain page
           </p>
+          {code}
+          <HydratedAddon tenantId={subdomain} props={{}} />
         </div>
       </div>
     </div>
