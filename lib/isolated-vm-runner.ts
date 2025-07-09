@@ -4,8 +4,7 @@
 const ivm = require("isolated-vm");
 const fs = require("fs");
 const path = require("path");
-const isolates = new Map(); // cache per-tenant isolates
-// ts-ignore-next-line
+// const isolates = new Map(); // cache per-tenant isolates
 
 type VNode = {
   type: string | Function;
@@ -19,14 +18,11 @@ function renderVNode(
   if (typeof vnode === "string") return vnode;
   if (typeof vnode === "number") return vnode.toString();
   if (vnode === null || vnode === undefined) return null;
-  //console.log("Rendering vnode:", vnode);
 
   const React = require("react");
 
   return React.createElement(
-    typeof vnode.type === "function"
-      ? (vnode.type as React.ComponentType)
-      : vnode.type,
+    vnode.type,
     { ...vnode.props, key: Math.random().toString() },
     Array.isArray(vnode.props?.children)
       ? vnode.props.children.map(renderVNode)
@@ -35,7 +31,7 @@ function renderVNode(
 }
 
 async function getOrCreateIsolate(tenantId: string) {
-  // if (isolates.has(tenantId)) return isolates.get(tenantId);
+  // if (isolates.has(tenantId)) return isolates.get(tenantId); <-- This acts like a cache, but we don't want that now
 
   const isolate = new ivm.Isolate({ memoryLimit: 128 });
   const context = await isolate.createContext();
@@ -44,6 +40,9 @@ async function getOrCreateIsolate(tenantId: string) {
   await jail.set("global", jail.derefInto());
   await jail.set("log", (...args: any) =>
     console.log(`[${tenantId}]`, ...args)
+  );
+  await jail.set("error", (...args: any) =>
+    console.error(`[${tenantId}]`, ...args)
   );
 
   await jail.set(
@@ -68,10 +67,6 @@ async function getOrCreateIsolate(tenantId: string) {
 
   const code = fs.readFileSync(codePath, "utf8");
 
-  // context.evalSync(`log('Loading addon for tenant:', '${tenantId}');`, {
-  //   reference: true,
-  // });
-
   const script = await isolate.compileScript(code);
   await script.run(context);
 
@@ -85,32 +80,8 @@ async function getOrCreateIsolate(tenantId: string) {
   };
 
   const runnerWrapper = { isolate, context, render: runner };
-  isolates.set(tenantId, runnerWrapper);
+  // isolates.set(tenantId, runnerWrapper);
   return runnerWrapper;
-
-  // console.log('Creating new isolate for tenant:', tenantId);
-  // const isolate = new ivm.Isolate({ memoryLimit: 128 });
-  // console.log('Isolate created:', isolate);
-  // const context = await isolate.createContext();
-
-  // // set up console/logging
-  // await context.global.set('log', (...args) => console.log('[ADDON]', ...args), { reference: true });
-
-  // // preload addon code
-  // const script = await isolate.compileScript(`
-  //   function render(input) {
-  //     const props = JSON.parse(input);
-  //     return '<div>Rendered product: ' + props.product.name + '</div>';
-  //   }
-
-  //   globalThis.render = render;
-  // `);
-
-  // await script.run(context);
-
-  // const result = await context.global.get('render', { reference: true });
-  // const html = await result.apply(undefined, [ JSON.stringify({ product }) ], { result: 'utf8' });
-  // return html;
 }
 
 module.exports = { getOrCreateIsolate };

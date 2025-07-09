@@ -76,8 +76,8 @@ export default async function SubdomainPage({
           <p className="mt-3 text-lg text-gray-600">
             This is your custom subdomain page
           </p>
-          {code}
           <HydratedAddon tenantId={subdomain} props={{}} />
+          {code}
         </div>
       </div>
     </div>
