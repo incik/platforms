@@ -18,7 +18,8 @@ export function h(type, props, ...children) {
   // If type is a function, call it with props so it can return an element
   // This allows us to define multiple components in a single file and use them
   if (typeof type === "function") {
-    return type({ ...normalizedProps, key, ref });
+    const result = type({ ...normalizedProps, key, ref });
+    return result; // result instanceof Promise ? await result : result;
   }
 
   const element = {

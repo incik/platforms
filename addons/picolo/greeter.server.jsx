@@ -11,26 +11,17 @@ export const User = ({ name, username, email, address }) => {
   );
 };
 
-export default async function Greeter() {
-  const product = {
-    name: "Picoloddddddd",
-    price: 19.99,
-  };
+export const Caputo = async () => {
+  const URL = "https://jsonplaceholder.typicode.com/userss/";
+  const data = await fetch(URL);
 
-  log("Rendering Picolo addon with props:", product);
+  log("Fetched data", data);
 
-  try {
-    const URL = "https://jsonplaceholder.typicode.com/users/";
-    const data = await fetch(URL);
-
-    // log("Fetched data", data);
-
-    try {
-      return (
-        <div>
-          <h1 className="text-2xl font-bold">{product.name}</h1>
-          <p className="text-lg">Price: ${product.price}</p>
-
+  return (
+    <div className="client-addon">
+      <h2 style={{ color: "green" }}>Caputo</h2>
+      {Object.keys(data).length > 0 ? (
+        <>
           <h2 className="text-xl font-semibold mt-4">Users:</h2>
           <div className="flex flex-col gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((user) => (
@@ -42,7 +33,33 @@ export default async function Greeter() {
                 address={user.address}
               />
             ))}
-          </div>
+          </div>{" "}
+        </>
+      ) : (
+        <div className="error border border-red-500 p-4 bg-red-100 text-red-700">
+          <p>No data available</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export async function Greeter({ foo }) {
+  const product = {
+    name: "Picoloddddddd",
+    price: 19.99,
+  };
+
+  log("Rendering Picolo addon with props:", product);
+  log("Foo prop:", foo);
+
+  try {
+    try {
+      return (
+        <div>
+          <Caputo />
+          <h1 className="text-2xl font-bold">{product.name}</h1>
+          <p className="text-lg">Price: ${product.price}</p>
         </div>
       );
     } catch (e) {
@@ -57,3 +74,5 @@ export default async function Greeter() {
     error("Fetch failed:", e.message);
   }
 }
+
+export default Greeter;

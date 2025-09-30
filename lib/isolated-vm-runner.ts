@@ -30,7 +30,7 @@ function renderVNode(
   );
 }
 
-async function getOrCreateIsolate(tenantId: string) {
+export async function getOrCreateIsolate(tenantId: string) {
   // if (isolates.has(tenantId)) return isolates.get(tenantId); <-- This acts like a cache, but we don't want that now
 
   const isolate = new ivm.Isolate({ memoryLimit: 128 });
@@ -72,7 +72,7 @@ async function getOrCreateIsolate(tenantId: string) {
 
   const renderRef = await context.global.get("render", { reference: true });
 
-  const runner = async (props: any) => {
+  const runner = async (props?: any) => {
     const result = await renderRef.apply(undefined, [JSON.stringify(props)], {
       result: { promise: true, externalCopy: true },
     });
